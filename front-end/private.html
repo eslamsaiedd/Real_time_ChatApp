@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=delete"
+/>
+<title>Private Chat</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  #chat {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #fff;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .messageContainer {
+    display: flex;
+    align-items: center;
+    position: relative;
+    align-self: flex-start;
+    box-sizing: border-box;
+  }
+
+  .myMessage {
+    border-bottom-right-radius: 0;
+    margin: 5px 0;
+    padding: 5px 35px 7px 10px;
+    background: #d1e7ff;
+    border-radius: 8px;
+    width: fit-content;
+    position: relative;
+    z-index: 10;
+    margin-left: 25px;
+  }
+
+  .otherMessage {
+    margin: 5px 0;
+    padding: 5px 35px 7px 10px;
+    border-radius: 8px;
+    background: #f1f1f1;
+    width: fit-content;
+    position: relative;
+    border-bottom-left-radius: 0;
+  }
+
+  .userNameStyle {
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .timeStyle {
+    font-size: 12px;
+    color: gray;
+    text-align: right;
+    position: absolute;
+    right: 5px;
+    bottom: 2px;
+  }
+
+  .deleteIconLeftSide {
+    font-size: 18px;
+    position: absolute;
+    z-index: 1;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.4s ease, left 0.6s ease, visibility 0.4s ease;
+  }
+
+  .own {
+    align-self: flex-end;
+  }
+
+  .own:hover .deleteIconLeftSide {
+    opacity: 1;
+    cursor: pointer;
+    left: 1px;  
+  }
+  
+  .myMessage:hover {
+    background-color: #add4ff;
+  }
+
+  .input-area {
+    display: flex;
+    margin-top: 10px;
+    gap: 5px;
+  }
+
+
+  #messageInput {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: 0.3s
+  }
+
+  #messageInput:focus {
+    border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  }
+
+  #sendBtn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .typing-indicator {
+    font-style: italic;
+    color: gray;
+    font-size: 14px;
+    display: none;
+    margin-bottom: 5px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 5px;
+  }
+
+  .userStatus {
+    background-color: black;
+    padding: 5px 7px;
+    border-radius: 15px;
+    color: #fff;
+    font-size: 13px;
+    margin-bottom: 10px;
+    align-self: center;
+  }
+
+  #header {
+  background-color: #d1e7ff;
+    border-radius: 10px 10px 0px 0px;
+    padding: 10px;
+  }
+
+  .joined_users {
+    font-size: 14px;
+  }
+
+  h2 {
+    margin: 0px;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div id="chat">
+    <header id="header">
+      <h2 class="group_name">chat</h2>
+      <div class="joined_users"></div>
+    </header>
+
+  </div>
+  <div class="typing-indicator" id="typingIndicator">Someone is typing...</div>
+  <div class="input-area">
+    <input type="text" id="messageInput" placeholder="Type a message..." />
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="private.js"></script>
+</body>
+</html>

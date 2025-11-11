@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="./chatpage.css">
+    <title>Real-time Chat</title>
+  </head>
+
+  <body>
+    <!-- Sidebar (unchanged classes) -->
+    <div class="sidebar">
+      <div class="roomList-appName">
+        <h2>ChatApp</h2>
+        <div id="roomList">
+          <div class="room active-room" data-room="general"><span class="dot"></span> General</div>
+          <div class="room" data-room="tech"><span class="dot"></span> Tech</div>
+          <div class="room" data-room="games"><span class="dot"></span> Games</div>
+        </div>
+      </div>
+
+      <div class="personal-info">
+        <div class="circle-profile">
+          <span class="icon-with-text">
+            <span class="material-symbols-outlined profile">account_circle</span>
+            <div class="circle-bg"></div>
+            <div class="tooltip">Profile</div>
+          </span>
+
+          <span class="icon-with-text">
+            <span class="material-symbols-outlined">add_comment</span>
+            <div class="circle-bg"></div>
+            <div class="tooltip">private chat</div>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat area (unchanged classes & IDs) -->
+    <div class="chat-container">
+      <h2 class="roomName"></h2>
+      <div id="chat"></div>
+
+      <div class="input-area">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="./home.js"></script>
+  </body>
+</html>

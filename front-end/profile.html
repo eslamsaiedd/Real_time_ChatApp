@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+    * {
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .profile-container {
+        background-color: #fff;
+        width: 360px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .header {
+        background-color: #075e54; 
+        color: white;
+        padding: 16px;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .profile-body {
+        padding: 24px;
+        text-align: center;
+    }
+
+    .profile-pic-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    .profile-pic {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+        background-color: #e6e6e6;
+        transition: transform 0.3s ease;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .profile-pic:hover {
+        transform: scale(1.03);
+    }
+
+    .profile-pic img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        z-index: 1;
+    }
+
+    /* تنسيق النصوص داخل الصورة (سواء إضافة أو تغيير) */
+    .photo-action-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); 
+        color: white;
+        font-size: 13px;
+        font-weight: 500;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        z-index: 2;
+        cursor: pointer;
+        padding: 0 10px;
+        opacity: 0; /* إخفاء النص بشكل افتراضي */
+        transition: opacity 0.3s;
+    }
+    
+    #addPhotoText {
+            /* يجب أن يظهر نص الإضافة دائمًا عند عدم وجود صورة */
+            opacity: 1;
+            flex-direction: column;
+            justify-content: center;
+    }
+    
+    #changePhotoText {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end; /* وضع النص في الأسفل */
+        padding-bottom: 15px;
+        font-size: 14px;
+    }
+
+    /* إظهار نص التغيير فقط عند الـ Hover */
+    .profile-pic:hover #changePhotoText {
+        opacity: 1;
+    }
+    
+    /* إخفاء نص الإضافة عند الـ Hover بمجرد رفع صورة */
+    .profile-pic:hover #addPhotoText.has-pic {
+        opacity: 0;
+    }
+
+    /* تنسيق القائمة المنسدلة */
+    .dropdown-menu {
+        position: absolute;
+        top: 100%; 
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        width: 180px;
+        text-align: left;
+        overflow: hidden;
+        display: none; 
+        margin-top: 5px;
+    }
+
+    .dropdown-menu button {
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        background: none;
+        border: none;
+        text-align: left;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .dropdown-menu button:hover {
+        background-color: #f0f2f5;
+    }
+
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .username-section {
+        margin-top: 25px;
+        text-align: left;
+    }
+
+    .username-label {
+        color: gray;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .username-display {
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0px;
+        font-size: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+    .username-text {
+        flex: 1;
+        padding-left: 5px;
+    }
+    
+    .username-display input[type="text"] {
+        flex: 1;
+        border: none;
+        padding: 0 5px;
+        background: transparent;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
+        color: #075e54;
+        cursor: pointer;
+        font-size: 18px;
+        transition: 0.3s;
+        padding: 5px;
+    }
+
+    .action-btn:hover {
+        color: #054d44;
+        transform: scale(1.1);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="header">Profile</div>
+        <div class="profile-body">
+            
+            <div class="profile-pic-wrapper">
+                <div class="profile-pic" id="profilePicContainer">
+                    <img id="profilePic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Default Profile">
+                    
+                    <label for="upload-img" class="photo-action-text" id="addPhotoText">Add Profile Photo</label>
+
+                    <div class="photo-action-text" id="changePhotoText">
+                        Change Profile Photo
+                    </div>
+                </div>
+
+                <div class="dropdown-menu" id="photoDropdown">
+                    <button id="removePicBtn">Remove this picture</button>
+                    <button id="uploadNewPicBtn">Upload new picture</button>
+                </div>
+            </div>
+            
+            <input type="file" id="upload-img" accept="image/*">
+
+            <div class="username-section">
+                <p class="username-label">Username</p>
+                <div class="username-display">
+                    <span class="username-text" id="usernameText"></span>
+                    <button class="action-btn" id="actionBtn" title="Edit username">
+                        <svg id="editIcon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#075e54">
+                            <path d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                        </svg>
+                        <svg id="saveIcon" style="display:none;" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#075e54">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./profile.js"></script>
+</body>
+</html>
