@@ -33,7 +33,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const userData = await userRes.json();
 
   
+  
+
   if (userData && userData.data && userData.data.username) {
+    localStorage.setItem('avatar', userData.data.avatar);
     localStorage.setItem('username', userData.data.username);
   } else {
     console.error("User data not found!");
@@ -41,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 const userName = localStorage.getItem('username')
-const roomName = localStorage.getItem('room')
+const avatar = localStorage.getItem('avatar')
 
 
 const chat = document.getElementById('chat');
@@ -53,7 +56,7 @@ let currentRoom = "general";
 groupname.textContent = currentRoom
 
 // join افتراضي للروم العامة
-socket.emit('join', { userName, roomName});
+socket.emit('join', { userName, roomName:currentRoom, avatar});
 
 // switching rooms
 roomList.addEventListener('click', (e) => {
@@ -64,7 +67,7 @@ roomList.addEventListener('click', (e) => {
     const newRoom = e.target.getAttribute('data-room');
     const roomType = e.target.getAttribute('data-type') || 'public';
 
-    socket.emit('switch-room', { userName, newRoom, type: roomType });
+    socket.emit('switch-room', { userName, newRoom, avatar});
     currentRoom = newRoom;
     groupname.textContent = currentRoom
     chat.innerHTML = '';
@@ -72,12 +75,18 @@ roomList.addEventListener('click', (e) => {
 });
 
 
-
 // server events
 socket.on('joinedUser', (data) => showUserStatus(data));
 socket.on('userLeft', (msg) => showUserStatus(msg));
-socket.on('loadMessages', (messages) => messages.forEach(msg =>
-  displayMessage(msg.username, msg.message, msg.time, msg._id, msg.userId)));
+
+socket.on('loadMessages', (messages) =>{
+  messages.forEach(msg => {
+    console.log(msg);
+    
+    displayMessage(msg.username, msg.message, msg.time, msg._id, msg.userId._id, msg.userId.avatar)
+  })
+
+})
 
 
 
@@ -104,13 +113,17 @@ socket.on('clear_typing_status', () => {
 
 sendBtn.addEventListener('click', () => {
   const message = input.value.trim();
+  const currentUsername = localStorage.getItem('username');
   if (message) {
-    socket.emit('textMessage', { userName, message, time: new Date().getTime(), });
+    socket.emit('textMessage', { userName: currentUsername, message, time: new Date().getTime(), avatar});
     input.value = "";
   }
 });
 
-socket.on('send-message-to-all-users', (data) => displayMessage(data.username, data.message, data.time, data._id, data.userId));
+socket.on('send-message-to-all-users', (data) =>{
+  displayMessage(data.username, data.message, data.time, data._id, data.userId, data.avatar)
+}
+)
 
 socket.on('message-deleted', (messageId) => {
   const msgElement = document.querySelector(`[data-id="${messageId}"]`);
@@ -118,7 +131,7 @@ socket.on('message-deleted', (messageId) => {
 });
 
 
-function displayMessage(sender, message, timestamp, msgId, userId) {
+function displayMessage(sender, message, timestamp, msgId, userId, avatar) {
 
   const messageContainer = document.createElement('div');
   const msgDiv = document.createElement('div');
@@ -133,6 +146,8 @@ function displayMessage(sender, message, timestamp, msgId, userId) {
   if (msgId) messageContainer.setAttribute('data-id', msgId);
 
   if (isMyMsg) {
+    msgDiv.classList.add('sent')
+    
     messageContainer.classList.add('own');
     const deleteIcon = document.createElement('span');
     deleteIcon.classList.add('material-symbols-outlined', 'delete', 'deleteIconLeftSide');
@@ -158,11 +173,19 @@ function displayMessage(sender, message, timestamp, msgId, userId) {
   timeDiv.classList.add('timeStyle');
 
   if (!isMyMsg) {
+    const photo = document.createElement('img');
+    photo.classList.add('avatar')
+    photo.src = avatar
+    
     const userName = document.createElement('div');
     userName.classList.add('userNameStyle');
+    msgDiv.classList.add('received')
     userName.textContent = sender;
     msgDiv.appendChild(userName);
+    msgDiv.appendChild(photo);
   }
+
+
 
   msgDiv.appendChild(msgText);
   msgDiv.appendChild(timeDiv);
@@ -188,6 +211,9 @@ const profile = document.querySelector('.profile').addEventListener('click', () 
   window.location.href = './profile.html'
 }) 
 
+const privateChat = document.querySelector('.private-chat').addEventListener('click', () => {
+  window.location.href = './hidden-login.html'
+})
 // home.js
 
 // const socket = io('http://localhost:3000');

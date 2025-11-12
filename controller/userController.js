@@ -118,10 +118,27 @@ const deletePhoto = async (req, res) => {
     }
 }
 
+
+const updateUsername = async (req, res) => {
+    try{ 
+        const userId = req.user.id
+        console.log("==============", userId);
+        const newName = req.body.username;
+         
+        await User.findByIdAndUpdate(userId, {username: newName})
+
+        res.json({success: true, message:'username updating successfully', newName})
+
+    }catch(err) {
+        res.status(500).json({ success: false, message: "Error updating username", error: err.message});
+    }
+}
+
 module.exports = {
     register, 
     login,
     profile,
     upload,
-    deletePhoto
+    deletePhoto,
+    updateUsername
 }

@@ -186,6 +186,7 @@ const User = require('./models/userModel');
 const connectDB = require('./config/db');
 connectDB();
 
+
 const roomUsers = {};
 
 app.use(express.static(path.join(__dirname, 'front-end')));
@@ -218,11 +219,11 @@ io.on('connection', (socket) => {
     socket.disconnect();
   }
 
-  socket.on('join', async ({ userName, roomName }) => {
-    // if (!roomName) {
-    //   console.log('❌ roomName is missing!');
-    //   return;
-    // }
+  socket.on('join', async ({ userName, roomName}) => {
+    if (!roomName) {
+      console.log('❌ roomName is missing!');
+      return;
+    }
 
     socket.userName = userName;
     socket.roomName = roomName;
@@ -251,13 +252,45 @@ io.on('connection', (socket) => {
     socket.join(room.name);
     socket.currentRoom = room.name;
 
-    // بلغ باقي المستخدمين إن حد جديد دخل
     socket.to(room.name).emit('joinedUser', { userName, roomName });
 
-    // رجع آخر 20 رسالة
-    const oldMessages = await Message.find({ room: room._id }).sort({ time: 1 }).limit(20);
+    const oldMessages = await Message.find({ room: room._id }).sort({ time: 1 }).limit(20).populate('userId', ' avatar');
     socket.emit('loadMessages', oldMessages);
   });
+
+
+  //* join || create hidden chat
+  socket.on('joinHiddenRoom', async (data) => {
+    try{
+
+      if (!data.roomName) {
+        console.log('❌ roomName is missing!');
+        return;
+      }
+
+      let room = await Room.findOne({roomName: data.roomName})
+
+      if (!room) {
+        room = await Room.create({roomName: data.roomName, password: data.password})
+        console.log('new room created', roomName);
+      }else {
+        // check if password matched 
+        if (data.password != room.password ) {
+          alert('something went wrong')
+          return
+        }
+      } 
+
+      socket.join(roomName)
+      console.log(`${username} joined room: ${roomName}`);
+
+
+      socket.emit("previousMessages", room.messages);
+    }catch (err) {
+      console.error(err);
+    }
+  })
+
 
   // 🟨 إرسال رسالة
   socket.on('textMessage', async (msg) => {
@@ -271,20 +304,21 @@ io.on('connection', (socket) => {
         username: msg.userName,
         message: msg.message,
         time: msg.time,
+        avatar: msg.avatar,
         room: room._id,
       });
 
       await newMsg.save();
 
-      // console.log('socket.user'  ,socket.user);
-      // console.log(newMsg);
+      console.log(msg.avatar);
       
       io.to(socket.currentRoom).emit('send-message-to-all-users', {
         _id: newMsg._id,
         userId: socket.user.id,
-        username: msg.username,
+        username: msg.userName,
         message: msg.message,
         time: msg.time,
+        avatar:msg.avatar
       });
     } catch (err) {
       console.error('Error saving message:', err);
@@ -292,7 +326,7 @@ io.on('connection', (socket) => {
   });
 
   // switching between rooms 
-  socket.on('switch-room', async ({ userName, newRoom }) => {
+  socket.on('switch-room', async ({ userName, newRoom, avatar }) => {
     
     if (!newRoom) {
       console.log('❌ newRoom is missing!');
@@ -312,16 +346,16 @@ io.on('connection', (socket) => {
       console.log(`✅ Created room: ${newRoom}`);
     }
 
-    const messages = await Message.find({ room: room._id}).sort({ time: 1 }).populate('userId', '_id username');
+    const messages = await Message.find({ room: room._id}).sort({ time: 1 }).populate('userId', '_id avatar');
 
+    if (messages && messages.length > 0) {
+
+      socket.emit('loadMessages', messages);
+        
+    } else {
+        console.log("there isn't any message right now");
+    }    
     
-    socket.emit('loadMessages', messages.map(msg => ({
-      _id: msg._id,
-      username: msg.username,
-      userId: msg.userId._id,  
-      message: msg.message,
-      time: msg.time,
-    })));
 
     socket.to(oldRoom).emit('userLeft', `${userName} left`);
     socket.to(newRoom).emit('joinedUser', `${userName} joined`);
@@ -343,8 +377,7 @@ io.on('connection', (socket) => {
     try {
       const msg = await Message.findById(messageId);
       if (!msg) return;
-      // console.log(msg.username, socket.userName);
-      // console.log(messageId);
+      
       if (msg.username !== socket.userName) return;
 
       await Message.findByIdAndDelete(messageId);

@@ -40,6 +40,9 @@ router.route('/upload')
 router.route('/delete-photo')
             .put(verifyToken, userController.deletePhoto)
 
+router.route('/update-username')
+            .put(verifyToken, userController.updateUsername)
+
 router.route('/profile')
             .get(verifyToken, userController.profile)
 

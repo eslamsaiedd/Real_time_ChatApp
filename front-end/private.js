@@ -1,6 +1,6 @@
 const socket = io('http://localhost:3000');
-const username = sessionStorage.getItem('username');
-const roomname = sessionStorage.getItem('room');
+const username = localStorage.getItem('username');
+const roomname = localStorage.getItem('room');
 document.querySelector('.group_name').textContent = `${roomname}`
 
 if(!username) window.location.href = 'index.html';

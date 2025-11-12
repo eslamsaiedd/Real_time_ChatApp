@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (data.success) {
         //* update picture from db 
         profilePic.src = `${window.location.origin}${data.imagePath}`;
+        
         } else {
         alert('Upload failed: ' + (data.message || 'Unknown error'));
         }
@@ -127,7 +128,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error uploading image:', err);
     }
     });
-
 
     // إظهار/إخفاء القائمة المنسدلة عند الضغط على "Change Profile Photo"
     changePhotoText.addEventListener('click', (e) => {
@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         photoDropdown.style.display = 'none';
     });
 
+    
     // --- وظائف إدارة الاسم (مأخوذة من الكود السابق وهي تعمل بشكل سليم) ---
 
     const handleBlur = () => {
@@ -192,22 +193,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const saveName = () => {
+    const saveName = async () => {
         const input = document.getElementById('usernameInput');
         if (!input) return;
-        
-        input.removeEventListener('blur', handleBlur);
-        input.removeEventListener('keydown', handleEnter);
-        
-        const newName = input.value.trim() || originalName;
-        usernameText.textContent = newName;
-        originalName = newName; 
 
-        input.replaceWith(usernameText);
-        
-        saveIcon.style.display = 'none';
-        editIcon.style.display = 'block';
-        isEditing = false;
+        try {
+            const res = await fetch('http://localhost:3000/api/user/update-username', {
+                method:'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body:JSON.stringify({username: input.value.trim()})
+            }) 
+
+            const data = await res.json()
+            console.log(data);
+            
+            if(data.success) {
+
+                input.removeEventListener('blur', handleBlur);
+                input.removeEventListener('keydown', handleEnter);
+                const newName = input.value.trim() || originalName;
+                usernameText.textContent = newName;
+                originalName = newName; 
+                    
+                input.replaceWith(usernameText);
+                localStorage.setItem('username', originalName)
+                
+                saveIcon.style.display = 'none';
+                editIcon.style.display = 'block';
+                isEditing = false;
+            }
+                
+        }catch(err) {
+            console.error('error updating username',err)
+        }
     };
 
 
@@ -246,3 +267,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
 })
+

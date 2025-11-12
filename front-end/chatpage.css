@@ -29,7 +29,7 @@ body {
 
 /* Layout */
 .sidebar {
-  width: 260px;
+  width: 500px;
   background: var(--card);
   border-right: 1px solid rgba(15, 23, 36, 0.05);
   display: flex;
@@ -233,10 +233,10 @@ body {
 }
 
 .otherMessage {
-  margin: 0;
+  margin: 0px 0px 0px 25px;
   padding: 10px 10px 10px 10px;
   border-radius: 12px;
-  background: #f3f6fb;
+  background: #e9eef9;
   width: fit-content;
   position: relative;
   color: #0f1724;
@@ -295,12 +295,9 @@ body {
   cursor: pointer;
 }
 
-.messageContainer:hover .otherMessage {
-  background-color: #e9eef9;
-}
 
 .messageContainer:hover .myMessage {
-  background: linear-gradient(180deg, #dfeeff, #cfe8ff);
+  background: linear-gradient(180deg, #dfeeff, #b7dbfc);
 }
 
 .userStatus {
@@ -375,7 +372,51 @@ body {
   background: rgba(11, 97, 214, 0.08);
   border-radius: 8px;
 }
+.received {
+    float: left; 
+    border-bottom-left-radius: 0;
+}
 
+.sent {
+    float: right; 
+    border-bottom-right-radius: 0;
+}
+
+.received:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -7px; 
+    width: 0;
+    height: 0;
+    border: 7px solid transparent;
+    border-top-color: #ffffff; 
+    border-top-width: 0;
+    border-left-width: 0;
+}
+
+.sent:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: -7px; 
+    width: 0;
+    height: 0;
+    border: 7px solid transparent;
+    border-top-color: #dcf8c6; 
+    border-top-width: 0;
+    border-right-width: 0;
+}
+
+.avatar {
+  position: absolute;
+  left: -35px;
+  bottom: 0px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #07263f;
+}
 /* Responsive */
 @media (max-width: 900px) {
   .sidebar {
